@@ -1,0 +1,139 @@
+/* Custom CSS for Royal Cuisine */
+
+/* Base Styles */
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: #000;
+    color: #fff;
+  }
+  
+  .font-serif {
+    font-family: "Playfair Display", serif;
+  }
+  
+  /* Colors */
+  .text-gold {
+    color: #8c7240;
+  }
+  
+  .text-amber {
+    color: #f0ad4e;
+  }
+  
+  .text-gray {
+    color: #999b9e;
+  }
+  
+  .bg-black {
+    background-color: #000;
+  }
+  
+  .border-gray {
+    border-color: #999b9e;
+  }
+  
+  /* Buttons */
+  .btn-gold {
+    background-color: #8c7240;
+    border-color: #8c7240;
+  }
+    /* Buttons */
+  .btn-gold1 {
+    background-color: white;
+    border-color: #8c7240;
+  }
+  
+  .btn-gold:hover {
+    background-color: #f0ad4e;
+    border-color: #f0ad4e;
+  }
+  .btn-gold1:hover {
+    background-color: white;
+    border-color: #f0ad4e;
+  }
+  .btn-light-gray {
+    background-color: #d9d9d9;
+    border-color: #d9d9d9;
+    color: #000;
+  }
+  
+  .btn-light-gray:hover {
+    background-color: #bdbdbd;
+    border-color: #bdbdbd;
+    color: #000;
+  }
+  
+  /* Hero Section */
+  .hero-section {
+    height: 500px;
+    background-image: url("../assets/image3.png");
+    background-size: cover;
+    background-position: center;
+    position: relative;
+  }
+  
+  .hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  
+  .z-index-1 {
+    z-index: 1;
+  }
+  
+  /* Service Icons */
+  .service-icon {
+    width: 128px;
+    height: 128px;
+    border-radius: 50%;
+    border: 2px solid white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Food Gallery */
+  .food-gallery {
+    height: 400px;
+    background-image: url("../assets/Rectangle64.png");
+    background-size: cover;
+    background-position: center;
+  }
+  
+  /* Navigation */
+  .nav-link:hover {
+    color: #8c7240 !important;
+  }
+  
+  /* Form Controls */
+  .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+  }
+  
+  .form-control:focus {
+    background-color: transparent;
+    color: white;
+    box-shadow: none;
+    border-color: #8c7240;
+  }
+  
+  /* Media Queries */
+  @media (max-width: 768px) {
+    .hero-section {
+      height: 400px;
+    }
+  
+    h1 {
+      font-size: 2rem;
+    }
+  
+    h2 {
+      font-size: 1.5rem;
+    }
+  }
+  
+  
