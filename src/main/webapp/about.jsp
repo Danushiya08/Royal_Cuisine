@@ -32,8 +32,8 @@
             <a href="menu.jsp" class="text-white text-decoration-none me-4 nav-link">Menu</a>
             <a href="offers.jsp" class="text-white text-decoration-none me-4 nav-link">Offers</a>
             <a href="location.jsp" class="text-white text-decoration-none me-4 nav-link">Location</a>
-            <a href="blog.jsp" class="text-white text-decoration-none me-4 nav-link">Blog</a>
-            <a href="contact.jsp" class="text-white text-decoration-none me-4 nav-link">Contact & Feedback</a>
+            <a href="contact.jsp" class="text-white text-decoration-none me-4 nav-link">Contact</a>
+            <a href="feedback.jsp" class="text-white text-decoration-none me-4 nav-link">Feedback</a>
             <a href="book.jsp" class="btn btn-gold text-white me-4">Book a Table</a>
             <a href="profile.jsp" class="text-white text-decoration-none">
               <i class="bi bi-person"></i>
@@ -72,21 +72,40 @@
   </section>
 
   <!-- Meet Our Team Section -->
-  <section class="py-5 text-center bg-black text-white">
+<section class="py-5 text-center bg-white" style="">
     <div class="container">
-      <h2 class="font-serif fst-italic display-5 text-amber">Meet Our Team</h2>
-      <p class="fs-4">Experts in the Art of Fine Dining</p>
-      <div class="row justify-content-center">
-        <div class="col-md-5 mb-4">
-          <img src="assets/Rectangle66.png" alt="John Smooth" class="img-fluid mb-3" style="max-width: 200px;">
-          <h3 class="fs-4 mb-1">John Smooth</h3>
-          <p class="text-gray small">Restaurant Owner</p>
+      <h2 class="mb-5">
+        <span class="text-amber font-serif fst-italic display-5" style="font-size: 36px">Our Team</span>
+        <br>
+        <span class="text-dark fs-4 text-amber font-serif fst-italic">Focuses on the positive outcomes of collaboration.</span>
+      </h2>
+      
+      <div class="row justify-content-center mt-5 py-4">
+        <!-- Chef 1 -->
+        <div class="col-md-3 mb-4 mb-md-0">
+          <img src="https://businesstoday.lk/wp-content/uploads/2022/09/ezgif.com-gif-maker-25-3-863x1024.webp" alt="John Smooth" class="img-fluid mb-3" style="width: 200px; height: 200px; border-radius: 100px; object-fit: cover;">
+          <h3 class="fs-4 mb-1 text-dark">Dharshan Munidasa</h3>
+          <p class="text-gray small mb-2">Restaurant Owner</p>
         </div>
-        <div class="col-md-5">
-          <img src="assets/Rectangle67.png" alt="Luke Simon" class="img-fluid mb-3" style="max-width: 200px;">
-          <h3 class="fs-4 mb-1">Luke Simon</h3>
-          <p class="text-gray small">Head Chef</p>
+        
+        <div class="col-md-3">
+          <img src="https://traveltradejournal.com/wp-content/uploads/2024/02/Saharsh-Vadhera-Director-Sales-and-Marketing-Shangri-La-Sri-Lanka.jpg" alt="Luke Simon" class="img-fluid mb-3" style="width: 200px; height: 200px; border-radius: 100px; object-fit: cover;">
+          <h3 class="fs-4 mb-1 text-dark">Saharsh Vadhera</h3>
+          <p class="text-gray small mb-2">Restaurant Manager</p>
         </div>
+        
+        <div class="col-md-3">
+          <img src="https://s3.amazonaws.com/bizenglish/wp-content/uploads/2023/03/15120002/International-award-winning-culinary-expert-Nuwan-Silva-Executive-Chef-at-Courtyard-by-Marriott-Colombo-e1678861849201.jpg" alt="Luke Simon" class="img-fluid mb-3" style="width: 200px; height: 200px; border-radius: 100px; object-fit: cover;">
+          <h3 class="fs-4 mb-1 text-dark">Nuwan Silva </h3>
+          <p class="text-gray small mb-2">Executive Chef</p>
+        </div>
+        
+        <div class="col-md-3">
+          <img src="https://10play.com.au/ip/s3/2022/03/30/30218224a21ae68942cb1e2ab22d4a78-1138696.jpg?image-profile=bio_full&io=portrait" alt="Luke Simon" class="img-fluid mb-3" style="width: 200px; height: 200px; border-radius: 100px; object-fit: cover;">
+          <h3 class="fs-4 mb-1 text-dark">Dulan Hapuarachchi</h3>
+          <p class="text-gray small mb-2">Sous Chef</p>
+        </div>
+        
       </div>
     </div>
   </section>
@@ -98,22 +117,7 @@
         <!-- Open Hours -->
         <div class="col-md-4 mb-4 mb-md-0">
           <h3 class="fs-4 mb-4">Open Hours</h3>
-          <div class="row">
-            <div class="col-6">Monday</div>
-            <div class="col-6">9:00 - 24:00</div>
-            <div class="col-6">Tuesday</div>
-            <div class="col-6">9:00 - 24:00</div>
-            <div class="col-6">Wednesday</div>
-            <div class="col-6">9:00 - 24:00</div>
-            <div class="col-6">Thursday</div>
-            <div class="col-6">9:00 - 24:00</div>
-            <div class="col-6">Friday</div>
-            <div class="col-6">9:00 - 02:00</div>
-            <div class="col-6">Saturday</div>
-            <div class="col-6">9:00 - 02:00</div>
-            <div class="col-6">Sunday</div>
-            <div class="col-6">9:00 - 02:00</div>
-          </div>
+          <jsp:include page="/include/hours.jsp" />
         </div>
         
         <!-- Newsletter -->

@@ -11,12 +11,21 @@ public class MenuServlet extends HttpServlet {
 
     // Meal class to store meal data
     public static class Meal {
+    	private int id;
         private String name;
         private String description;
         private double price;
         private String imageUrl;
 
         // Getters and setters
+        public String getId() {
+            return name;
+        }
+
+        public void setId(int id) {
+            this.id = id;
+        }
+        
         public String getName() {
             return name;
         }
@@ -95,7 +104,7 @@ public class MenuServlet extends HttpServlet {
         // Database connection details
         String jdbcURL = "jdbc:mysql://localhost:3306/royal_cuisine";
         String jdbcUsername = "root";
-        String jdbcPassword = "12345678";
+        String jdbcPassword = "root";
 
         // Lists to store meals and beverages
         List<Meal> mealList = new ArrayList<>();
@@ -106,12 +115,13 @@ public class MenuServlet extends HttpServlet {
             Connection connection = DriverManager.getConnection(jdbcURL, jdbcUsername, jdbcPassword);
 
             // Fetch meals
-            String mealSql = "SELECT name, description, price, image_url FROM meals";
+            String mealSql = "SELECT id, name, description, price, image_url FROM meals";
             PreparedStatement mealStatement = connection.prepareStatement(mealSql);
             ResultSet mealResultSet = mealStatement.executeQuery();
 
             while (mealResultSet.next()) {
                 Meal meal = new Meal();
+                meal.setId(mealResultSet.getInt("id"));
                 meal.setName(mealResultSet.getString("name"));
                 meal.setDescription(mealResultSet.getString("description"));
                 meal.setPrice(mealResultSet.getDouble("price"));

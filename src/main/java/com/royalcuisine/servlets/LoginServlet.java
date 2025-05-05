@@ -12,6 +12,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.mindrot.jbcrypt.BCrypt;
+
 
 public class LoginServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -30,43 +32,51 @@ public class LoginServlet extends HttpServlet {
         }
 
         // Database query to check user credentials and retrieve the role
-        String sql = "SELECT id, first_name, last_name, role FROM users WHERE email = ? AND password = ?";
+        String sql = "SELECT id, first_name, last_name, role, password FROM users WHERE email = ?";
+
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setString(1, email);
-            stmt.setString(2, password);
-            ResultSet rs = stmt.executeQuery();
+        	stmt.setString(1, email);
+        	ResultSet rs = stmt.executeQuery();
 
-            if (rs.next()) {
-                // Create user session
-                HttpSession session = request.getSession();
-                session.setAttribute("userId", rs.getInt("id"));
-                session.setAttribute("firstName", rs.getString("first_name"));
-                session.setAttribute("lastName", rs.getString("last_name"));
-                session.setAttribute("email", email);
+        	if (rs.next()) {
+        	    String hashedPassword = rs.getString("password");
 
-                String role = rs.getString("role");
+        	    if (BCrypt.checkpw(password, hashedPassword)) {
+        	        // Password is correct — set session
+        	        HttpSession session = request.getSession();
+        	        session.setAttribute("userId", rs.getInt("id"));
+        	        session.setAttribute("firstName", rs.getString("first_name"));
+        	        session.setAttribute("lastName", rs.getString("last_name"));
+        	        session.setAttribute("email", email);
+        	        session.setAttribute("role", rs.getString("role"));
 
-                // Redirect based on role
-                if ("admin".equalsIgnoreCase(role)) {
-                    response.sendRedirect("admin/admin_dashboard.jsp"); // Admin dashboard
-                } else if ("staff".equalsIgnoreCase(role)) {
-                    response.sendRedirect("admin/staff_dashboard.jsp"); // Staff dashboard
-                } else if ("manager".equalsIgnoreCase(role)) {
-                    response.sendRedirect("admin/manager_dashboard.jsp"); // Manager dashboard
-                } else if ("user".equalsIgnoreCase(role)) {
-                    response.sendRedirect("home.jsp"); // Regular user home page
-                }
+        	        String role = rs.getString("role");
 
-                // Send welcome email
-                sendWelcomeEmail(email, rs.getString("first_name"));
-                System.out.println("✅ Login successful for: " + email);
-            } else {
-                System.out.println("❌ Invalid credentials for: " + email);
-                response.sendRedirect("login.jsp?error=Invalid email or password.");
+        	        // Redirect based on role
+        	        if ("admin".equalsIgnoreCase(role)) {
+        	            response.sendRedirect("admin/admin_dashboard.jsp");
+        	        } else if ("staff".equalsIgnoreCase(role)) {
+        	            response.sendRedirect("admin/staff_dashboard.jsp");
+        	        } else if ("manager".equalsIgnoreCase(role)) {
+        	            response.sendRedirect("admin/manager_dashboard.jsp");
+        	        } else {
+        	            response.sendRedirect("home.jsp");
+        	        }
+
+        	        sendWelcomeEmail(email, rs.getString("first_name"));
+        	        System.out.println("✅ Login successful for: " + email);
+        	    } else {
+        	        
+        	        response.sendRedirect("login.jsp?error=The Password You Entered is Invalid.");
+        	    }
+        	} else {
+                // ⚠ Email not found
+                response.sendRedirect("login.jsp?error=The Email Address You Entered is Invalid.");
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
             response.sendRedirect("login.jsp?error=Database error. Please try again.");

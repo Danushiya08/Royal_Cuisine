@@ -4,20 +4,18 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-
 public class ReservationManagementServlet extends HttpServlet {
 
     // JDBC connection details
     private static final String JDBC_URL = "jdbc:mysql://localhost:3306/royal_cuisine";
     private static final String JDBC_USERNAME = "root";
-    private static final String JDBC_PASSWORD = "12345678";
+    private static final String JDBC_PASSWORD = "1234";
 
     static {
         try {
@@ -36,7 +34,7 @@ public class ReservationManagementServlet extends HttpServlet {
         String reservationDate = request.getParameter("reservationDate");
         String reservationTime = request.getParameter("reservationTime");
         String guestsString = request.getParameter("guests");
-        String packageSelected = request.getParameter("packageSelected");
+        String tableNo = request.getParameter("table_no");  // Changed from packageSelected to table_no
 
         // Validation: check if 'guests' is valid
         int guests = 0;
@@ -48,7 +46,7 @@ public class ReservationManagementServlet extends HttpServlet {
         }
 
         try (Connection connection = DriverManager.getConnection(JDBC_URL, JDBC_USERNAME, JDBC_PASSWORD)) {
-            String sql = "INSERT INTO reservations (name, email, phone, reservation_date,reservation_time, guests, package_selected) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO reservations (name, email, phone, reservation_date, reservation_time, guests, table_no) VALUES (?, ?, ?, ?, ?, ?, ?)";
             try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                 preparedStatement.setString(1, name);
                 preparedStatement.setString(2, email);
@@ -56,7 +54,7 @@ public class ReservationManagementServlet extends HttpServlet {
                 preparedStatement.setString(4, reservationDate);
                 preparedStatement.setString(5, reservationTime);
                 preparedStatement.setInt(6, guests);
-                preparedStatement.setString(7, packageSelected);
+                preparedStatement.setString(7, tableNo);  // Using table_no here
                 int result = preparedStatement.executeUpdate();
 
                 if (result > 0) {
@@ -80,7 +78,7 @@ public class ReservationManagementServlet extends HttpServlet {
         String reservationDate = request.getParameter("reservationDate");
         String reservationTime = request.getParameter("reservationTime");
         String guestsString = request.getParameter("guests");
-        String packageSelected = request.getParameter("packageSelected");
+        String tableNo = request.getParameter("table_no");  // Changed from packageSelected to table_no
 
         // Validation: check if 'guests' is valid
         int guests = 0;
@@ -92,7 +90,7 @@ public class ReservationManagementServlet extends HttpServlet {
         }
 
         try (Connection connection = DriverManager.getConnection(JDBC_URL, JDBC_USERNAME, JDBC_PASSWORD)) {
-            String sql = "UPDATE reservations SET name = ?, email = ?, phone = ?, reservation_date = ?,reservation_time = ?, guests = ?, package_selected = ? WHERE id = ?";
+            String sql = "UPDATE reservations SET name = ?, email = ?, phone = ?, reservation_date = ?, reservation_time = ?, guests = ?, table_no = ? WHERE id = ?";
             try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                 preparedStatement.setString(1, name);
                 preparedStatement.setString(2, email);
@@ -100,7 +98,7 @@ public class ReservationManagementServlet extends HttpServlet {
                 preparedStatement.setString(4, reservationDate);
                 preparedStatement.setString(5, reservationTime);
                 preparedStatement.setInt(6, guests);
-                preparedStatement.setString(7, packageSelected);
+                preparedStatement.setString(7, tableNo);  // Using table_no here
                 preparedStatement.setInt(8, reservationId);
                 int result = preparedStatement.executeUpdate();
 

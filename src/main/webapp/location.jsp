@@ -26,8 +26,8 @@
             <a href="menu.jsp" class="text-white text-decoration-none me-4 nav-link">Menu</a>
             <a href="offers.jsp" class="text-white text-decoration-none me-4 nav-link">Offers</a>
             <a href="location.jsp" class="text-white text-decoration-none me-4 nav-link">Location</a>
-            <a href="blog.jsp" class="text-white text-decoration-none me-4 nav-link">Blog</a>
-            <a href="contact.jsp" class="text-white text-decoration-none me-4 nav-link">Contact & Feedback</a>
+            <a href="feedback.jsp" class="text-white text-decoration-none me-4 nav-link">Feedback</a>
+            <a href="contact.jsp" class="text-white text-decoration-none me-4 nav-link">Contact</a>
             <a href="book.jsp" class="btn btn-gold text-white me-4">Book a Table</a>
             <a href="profile.jsp" class="text-white text-decoration-none">
               <i class="bi bi-person"></i>
@@ -47,14 +47,14 @@
       <!-- Address -->
       <h4 class="mt-4">Royal Cuisine Restaurant</h4>
       <p>
-        1234 Royal Street, Downtown, Cityname, Country<br>
-        Phone: +123 456 7890<br>
+        151 2/12 Prince Street, Colombo, Sri Lanka<br>
+        Phone: (+94) ( 011) 2575857<br>
         Email: contact@royalcuisine.com
       </p>
 
       <!-- Google Map Embed -->
       <div class="mt-4">
-        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3153.313035588287!2d144.96305831531456!3d-37.8141067797516!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad65d5c2ed7a533%3A0x5045675218cfc50!2sRoyal%20Cuisine!5e0!3m2!1sen!2sus!4v1624384097223!5m2!1sen!2sus" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+        <iframe src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d7921.165959138868!2d79.85283581349309!3d6.9403392220459015!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zNsKwNTYnMjUuNyJOIDc5wrA1MScxMC4zIkU!5e0!3m2!1sen!2slk!4v1746386331529!5m2!1sen!2slk" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
       </div>
 
     </div>
@@ -66,22 +66,7 @@
       <div class="row">
         <div class="col-md-4 mb-4 mb-md-0">
           <h3 class="fs-4 mb-4">Open Hours</h3>
-          <div class="row">
-            <div class="col-6">Monday</div>
-            <div class="col-6">9:00 - 24:00</div>
-            <div class="col-6">Tuesday</div>
-            <div class="col-6">9:00 - 24:00</div>
-            <div class="col-6">Wednesday</div>
-            <div class="col-6">9:00 - 24:00</div>
-            <div class="col-6">Thursday</div>
-            <div class="col-6">9:00 - 24:00</div>
-            <div class="col-6">Friday</div>
-            <div class="col-6">9:00 - 02:00</div>
-            <div class="col-6">Saturday</div>
-            <div class="col-6">9:00 - 02:00</div>
-            <div class="col-6">Sunday</div>
-            <div class="col-6">9:00 - 02:00</div>
-          </div>
+			<jsp:include page="/include/hours.jsp" />
         </div>
         
         <div class="col-md-4 mb-4 mb-md-0">

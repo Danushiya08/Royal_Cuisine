@@ -1,4 +1,4 @@
-<%@ page import="java.sql.Connection, java.sql.DriverManager, java.sql.PreparedStatement, java.sql.ResultSet" %>
+<%@ page import="java.sql.Connection, java.sql.DriverManager, java.sql.PreparedStatement, java.sql.ResultSet, java.sql.SQLException" %>
 <%@ page import="java.io.IOException" %>
 <%@ page import="com.royalcuisine.servlets.ReservationManagementServlet" %>
 
@@ -68,7 +68,6 @@
 </head>
 <body class="bg-black text-white">
 
-
    <!-- Sidebar -->
   <div class="sidebar">
     <h2 class="text-gold fw-bold">Staff Panel</h2>
@@ -89,10 +88,9 @@
           <i class="bi bi-person"></i>
         </button>
         <ul class="dropdown-menu" aria-labelledby="userDropdown">
-        
           <li><a class="dropdown-item" href="#">Email: <%= session.getAttribute("email") %></a></li>
           <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="../login.jsp">Logout</a></li>
+          <li><a class="dropdown-item" href="../login.jsp">Logout</a></li>
         </ul>
       </div>
     </div>
@@ -130,8 +128,41 @@
         <input type="number" class="form-control" id="guests" name="guests" required>
       </div>
       <div class="mb-3">
-        <label for="packageSelected" class="form-label">Package Selected</label>
-        <input type="text" class="form-control" id="packageSelected" name="packageSelected" required>
+        <label for="table_id" class="form-label">Select Table</label>
+        <select class="form-control" id="table_id" name="table_id" required>
+          <option value="">--Select Table--</option>
+          <% 
+            // Fetch tables and their prices from the database
+            Connection connTables = null;
+            PreparedStatement stmtTables = null;
+            ResultSet rsTables = null;
+
+            try {
+                connTables = DriverManager.getConnection("jdbc:mysql://localhost:3306/royal_cuisine", "root", "12345678");
+                String sql = "SELECT table_id, price FROM tables";
+                stmtTables = connTables.prepareStatement(sql);
+                rsTables = stmtTables.executeQuery();
+
+                while (rsTables.next()) {
+          %>
+              <option value="<%= rsTables.getString("table_id") %>">
+                Table <%= rsTables.getString("table_id") %> - $<%= rsTables.getDouble("price") %>
+              </option>
+          <% 
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (rsTables != null) rsTables.close();
+                    if (stmtTables != null) stmtTables.close();
+                    if (connTables != null) connTables.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+          %>
+        </select>
       </div>
       <button type="submit" class="btn btn-warning" name="action" value="addReservation">Add Reservation</button>
     </form>
@@ -177,7 +208,8 @@
           <th>Phone</th>
           <th>Reservation Date</th>
           <th>Guests</th>
-          <th>Package Selected</th>
+          <th>Table ID</th>
+         
           <th>Actions</th>
         </tr>
       </thead>
@@ -199,100 +231,15 @@
           <td><%= resultSet.getString("phone") %></td>
           <td><%= resultSet.getDate("reservation_date") %></td>
           <td><%= resultSet.getInt("guests") %></td>
-          <td><%= resultSet.getString("package_selected") %></td>
+          <td><%= resultSet.getString("table_id") %></td>
+        
           <td>
-            <!-- Edit Reservation Button -->
+            <!-- Edit and Delete Buttons -->
             <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editReservationModal<%= resultSet.getInt("id") %>">Edit</button>
             <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteReservationModal<%= resultSet.getInt("id") %>">Delete</button>
-
-            <!-- Edit Reservation Modal -->
-            <div class="modal fade" id="editReservationModal<%= resultSet.getInt("id") %>" tabindex="-1" aria-labelledby="editReservationModalLabel" aria-hidden="true">
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="editReservationModalLabel">Edit Reservation</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body">
-                    <form action="ReservationManagementServlet" method="POST">
-                      <input type="hidden" name="id" value="<%= resultSet.getInt("id") %>" />
-                      <div class="mb-3">
-                        <label for="name" class="form-label">Customer Name</label>
-                        <input type="text" class="form-control" name="name" value="<%= resultSet.getString("name") %>" required>
-                      </div>
-                      <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" name="email" value="<%= resultSet.getString("email") %>" required>
-                      </div>
-                      <div class="mb-3">
-                        <label for="phone" class="form-label">Phone</label>
-                        <input type="tel" class="form-control" name="phone" value="<%= resultSet.getString("phone") %>" required>
-                      </div>
-                      <div class="mb-3">
-                        <label for="reservationDate" class="form-label">Reservation Date</label>
-                        <input type="date" class="form-control" name="reservationDate" value="<%= resultSet.getDate("reservation_date") %>" required>
-                      </div>
-                      <div class="mb-3">
-                        <label for="reservationTime" class="form-label">Reservation Time</label>
-                        <input type="time" class="form-control" name="reservationTime" value="<%= resultSet.getTime("reservation_time") %>" required>
-                      </div>
-                      <div class="mb-3">
-                        <label for="guests" class="form-label">Guests</label>
-                        <input type="number" class="form-control" name="guests" value="<%= resultSet.getInt("guests") %>" required>
-                      </div>
-                      <div class="mb-3">
-                        <label for="packageSelected" class="form-label">Package Selected</label>
-                        <input type="text" class="form-control" name="packageSelected" value="<%= resultSet.getString("package_selected") %>" required>
-                      </div>
-                      <button type="submit" class="btn btn-warning" name="action" value="editReservation">Update Reservation</button>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            </div>
-              <!-- Edit Reservation Modal -->
-  <div class="modal fade" id="editReservationModal<%= resultSet.getInt("id") %>" tabindex="-1" aria-labelledby="editReservationModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="editReservationModalLabel">Edit Reservation</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form action="ReservationManagementServlet" method="POST">
-            <input type="hidden" name="id" value="<%= resultSet.getInt("id") %>" />
-            <!-- Add the rest of the input fields as you already have -->
-            <button type="submit" class="btn btn-warning" name="action" value="editReservation">Update Reservation</button>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Delete Reservation Modal -->
-  <div class="modal fade" style="color:black;" id="deleteReservationModal<%= resultSet.getInt("id") %>" tabindex="-1" aria-labelledby="deleteReservationModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="deleteReservationModalLabel">Delete Reservation</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <p>Are you sure you want to delete this reservation?</p>
-        </div>
-        <div class="modal-footer">
-          <form action="ReservationManagementServlet" method="POST">
-            <input type="hidden" name="id" value="<%= resultSet.getInt("id") %>" />
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <button type="submit" class="btn btn-danger" name="action" value="deleteReservation">Delete</button>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
           </td>
         </tr>
-        <% 
+        <%  
                     }
                 }
             } catch (Exception e) {

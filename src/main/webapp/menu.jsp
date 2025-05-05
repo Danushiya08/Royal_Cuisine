@@ -25,12 +25,12 @@
         <div class="col-md-9">
           <nav class="d-none d-md-flex justify-content-end align-items-center">
             <a href="home.jsp" class="text-white text-decoration-none me-4 nav-link">Home</a>
-            <a href="about.jsp" class="text-white text-decoration-none me-4 nav-link">about</a>
+            <a href="about.jsp" class="text-white text-decoration-none me-4 nav-link">About</a>
             <a href="menu.jsp" class="text-white text-decoration-none me-4 nav-link">Menu</a>
             <a href="offers.jsp" class="text-white text-decoration-none me-4 nav-link">Offers</a>
             <a href="location.jsp" class="text-white text-decoration-none me-4 nav-link">Location</a>
-            <a href="blog.jsp" class="text-white text-decoration-none me-4 nav-link">Blog</a>
-            <a href="contact.jsp" class="text-white text-decoration-none me-4 nav-link">Contact & Feedback</a>
+            <a href="feedback.jsp" class="text-white text-decoration-none me-4 nav-link">Feedback</a>
+            <a href="contact.jsp" class="text-white text-decoration-none me-4 nav-link">Contact</a>
             <a href="book.jsp" class="btn btn-gold text-white me-4">Book a Table</a>
             <a href="profile.jsp" class="text-white text-decoration-none">
               <i class="bi bi-person"></i>
@@ -40,17 +40,18 @@
       </div>
     </div>
   </header>
+
   <!-- Menu Section -->
   <section class="py-5 text-center">
     <div class="container">
-      <h2 class="font-serif fst-italic display-5 text-amber">Our Menu</h2>
+      <h2 class="font-serif display-5 text-amber">Our Menu</h2>
       <div class="row mt-4">
 
         <% 
         // JDBC connection details
         String jdbcURL = "jdbc:mysql://localhost:3306/royal_cuisine";
         String jdbcUsername = "root";
-        String jdbcPassword = "12345678";
+        String jdbcPassword = "1234";
         
         List<Meal> mealList = new ArrayList<>();
         List<Beverage> beverageList = new ArrayList<>();
@@ -61,7 +62,7 @@
             Connection connection = DriverManager.getConnection(jdbcURL, jdbcUsername, jdbcPassword);
 
             // Query to fetch meals
-            String mealSql = "SELECT name, description, price, image_url FROM meals";
+            String mealSql = "SELECT id, name, description, price, image_url FROM meals";
             PreparedStatement mealStatement = connection.prepareStatement(mealSql);
             ResultSet mealResultSet = mealStatement.executeQuery();
 
@@ -104,61 +105,150 @@
 
         %>
 
-        <!-- Display Meals -->
-        <h3 class="mt-5">Meals</h3>
+        <!-- Form to Send Table Details and Menu Selection to Reservation Page via URL -->
         <form action="reservation.jsp" method="POST">
-        <div class="row">
-        <% 
-            if (!mealList.isEmpty()) {
-                for (Meal meal : mealList) {
-        %>
-          <div class="col-md-4 mt-4">
-            <div class="card bg-dark text-white p-3">
-                <img src="<%= meal.getImageUrl() %>" alt="<%= meal.getName() %>" class="card-img-top" />
-                <h3 class="fs-4 mt-3"><%= meal.getName() %></h3>
-                <p><%= meal.getDescription() %></p>
-                <p>$<%= meal.getPrice() %></p>
-                <input type="checkbox" name="meals" value="<%= meal.getName() %>"> Select Meal
-            </div>
-          </div>
-        <% 
-                }
-            }
-        %>
-        </div>
+          
+          <!-- Table Details -->
+          <input type="hidden" name="table_id" value="<%= request.getParameter("table_id") %>">
+          
+          <!-- Meals Selection -->
+          <h3 class="mt-5">Meals</h3>
+          <div class="row">
+		    <% 
+		        if (!mealList.isEmpty()) {
+		            for (Meal meal : mealList) {
+		    %>
+		      <div class="col-md-3 mt-4">
+		        <div class="card bg-dark text-white p-3">
+		            <img src="<%= meal.getImageUrl() %>" alt="<%= meal.getName() %>" class="card-img-top" style="width: 100%; height: 200px; border-radius: 10px; object-fit: cover;"/>
+		            <div class="d-flex align-items-center justify-content-between mt-3">
+		            	<h3 class="fs-4 text-start"><%= meal.getName() %></h3>
+		            	<div class="form-check">
+		            		<label class="form-check-label text-gold " style="font-size: 12px" >Select</label>
+			                <input type="checkbox" class="form-check-input meal-checkbox" name="meals" value="<%= meal.getName() %>">
+		            	</div>
+		            </div>
+		            
+		            <p class="text-start" style="font-size: 14px; font-weight: 200; "><%= meal.getDescription() %></p>
+		            <p class="text-start fs-5">Rs <%= String.format("%.2f", meal.getPrice()) %></p>
+		
+		            
+		
+		            <!--<input type="hidden" name="meal_images" value="<%= meal.getImageUrl() %>"> -->
+		
+		            <div class="w-100">
+		                <label  class="text-start w-100">Quantity</label>
+		                <div class="input-group quantity-selector mt-2" style="max-width: 140px;">
+						    <button type="button" class="btn btn-outline-secondary btn-minus">-</button>
+						    <input type="number" class="form-control text-center meal-quantity" name="meal_quantities[<%= meal.getName() %>]" min="1" max="20" value="1">
+						    <button type="button" class="btn btn-outline-secondary btn-plus">+</button>
+						</div>
 
-        <!-- Display Beverages -->
-        <h3 class="mt-5">Beverages</h3>
-        <div class="row">
-        <% 
-            if (!beverageList.isEmpty()) {
-                for (Beverage beverage : beverageList) {
-        %>
-          <div class="col-md-4 mt-4">
-            <div class="card bg-dark text-white p-3">
-                <img src="<%= beverage.getImageUrl() %>" alt="<%= beverage.getName() %>" class="card-img-top" />
-                <h3 class="fs-4 mt-3"><%= beverage.getName() %></h3>
-                <p><%= beverage.getDescription() %></p>
-                <p>$<%= beverage.getPrice() %></p>
-                <input type="checkbox" name="beverages" value="<%= beverage.getName() %>"> Select Beverage
-            </div>
-          </div>
-        <% 
-                }
-            }
-        %>
-        </div>
+		            </div>
+		        </div>
+		      </div>
+		    <% 
+		            }
+		        }
+		    %>
+		</div>
 
-        <!-- Pass Package Data and Submit -->
-        <input type="hidden" name="package" value="<%= request.getParameter("package") %>">
-        
-        <!-- Book Button -->
-        <div class="mt-4">
-            <button type="submit" class="btn btn-gold">Proceed to Book</button>
-        </div>
+
+		
+		
+          <!-- Beverages Selection -->
+          <h3 class="mt-5">Beverages</h3>
+          <div class="row">
+            <% 
+                if (!beverageList.isEmpty()) {
+                    for (Beverage beverage : beverageList) {
+            %>
+              <div class="col-md-3 mt-4">
+                <div class="card bg-dark text-white p-3">
+                    <img src="<%= beverage.getImageUrl() %>" alt="<%= beverage.getName() %>" class="card-img-top" style="width: 100%; height: 200px; border-radius: 10px; object-fit: cover;"/>
+                    
+                    <div class="d-flex align-items-center justify-content-between mt-3">
+                    	<h3 class="fs-4 text-start"><%= beverage.getName() %></h3>
+                    	<div class="form-check">
+			                <input type="checkbox" class="form-check-input beverage-checkbox" name="beverage" value="<%= beverage.getName() %>">
+			                <label class="text-gold " style="font-size: 12px" >Select</label>
+			            </div>
+                    </div>
+                                      
+                    <p class="text-start" style="font-size: 14px; font-weight: 200; "><%= beverage.getDescription() %></p>
+                    <p class="text-start fs-5">Rs <%= String.format("%.2f", beverage.getPrice()) %></p>
+                    
+                    <!--<input type="hidden" name="beverage_images" value="<%= beverage.getImageUrl() %>"> -->
+                                                       
+                    <div class="mt-2">
+		                <label  class="text-start w-100">Quantity</label>
+		                <div class="input-group quantity-selector mt-2" style="max-width: 140px;">
+						    <button type="button" class="btn btn-outline-secondary btn-minus">-</button>
+						    <input type="number" class="form-control text-center beverage-quantity" name="beverage_quantities[<%= beverage.getName() %>]" min="1" max="20" value="1">
+						    <button type="button" class="btn btn-outline-secondary btn-plus">+</button>
+						</div>
+
+		            </div>
+                </div>
+              </div>
+            <% 
+                    }
+                }
+            %>
+          </div>
+          <button type="submit" class="btn btn-warning mt-4" id="submitBtn" disabled>Proceed to Reservation</button>
         </form>
     </div>
+    </div>
   </section>
+  <script>
+		document.querySelectorAll('.quantity-selector').forEach(group => {
+		    const input = group.querySelector('input');
+		    const minus = group.querySelector('.btn-minus');
+		    const plus = group.querySelector('.btn-plus');
+		
+		    minus.addEventListener('click', () => {
+		        let current = parseInt(input.value) || 1;
+		        if (current > parseInt(input.min)) {
+		            input.value = current - 1;
+		        }
+		    });
+		
+		    plus.addEventListener('click', () => {
+		        let current = parseInt(input.value) || 1;
+		        if (current < parseInt(input.max)) {
+		            input.value = current + 1;
+		        }
+		    });
+		});
+	</script>
+  <script>
+	  function hasTableIdInURL() {
+	    const params = new URLSearchParams(window.location.search);
+	    return params.has('table_id');
+	  }
+	
+	  function updateSubmitButton() {
+	    const submitBtn = document.getElementById('submitBtn');
+	
+	    if (!hasTableIdInURL()) {
+	      submitBtn.style.display = 'none';
+	      return;
+	    }
+	
+	    const mealChecked = document.querySelectorAll('.meal-checkbox:checked').length > 0;
+	    const beverageChecked = document.querySelectorAll('.beverage-checkbox:checked').length > 0;
+	
+	    submitBtn.disabled = !(mealChecked || beverageChecked);
+	    submitBtn.style.display = 'inline-block'; 
+	  }
+	
+	  const allCheckboxes = document.querySelectorAll('.meal-checkbox, .beverage-checkbox');
+	  allCheckboxes.forEach(cb => cb.addEventListener('change', updateSubmitButton));
+	
+	  window.addEventListener('DOMContentLoaded', updateSubmitButton);
+	</script>
+
 
   <!-- Footer -->
   <footer class="bg-black text-white py-5">
@@ -166,22 +256,7 @@
       <div class="row">
         <div class="col-md-4 mb-4 mb-md-0">
           <h3 class="fs-4 mb-4">Open Hours</h3>
-          <div class="row">
-            <div class="col-6">Monday</div>
-            <div class="col-6">9:00 - 24:00</div>
-            <div class="col-6">Tuesday</div>
-            <div class="col-6">9:00 - 24:00</div>
-            <div class="col-6">Wednesday</div>
-            <div class="col-6">9:00 - 24:00</div>
-            <div class="col-6">Thursday</div>
-            <div class="col-6">9:00 - 24:00</div>
-            <div class="col-6">Friday</div>
-            <div class="col-6">9:00 - 02:00</div>
-            <div class="col-6">Saturday</div>
-            <div class="col-6">9:00 - 02:00</div>
-            <div class="col-6">Sunday</div>
-            <div class="col-6">9:00 - 02:00</div>
-          </div>
+          <jsp:include page="/include/hours.jsp" />
         </div>
         
         <div class="col-md-4 mb-4 mb-md-0">

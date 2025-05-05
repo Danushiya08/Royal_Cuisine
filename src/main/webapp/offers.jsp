@@ -28,8 +28,8 @@
             <a href="menu.jsp" class="text-white text-decoration-none me-4 nav-link">Menu</a>
             <a href="offers.jsp" class="text-white text-decoration-none me-4 nav-link">Offers</a>
             <a href="location.jsp" class="text-white text-decoration-none me-4 nav-link">Location</a>
-            <a href="blog.jsp" class="text-white text-decoration-none me-4 nav-link">Blog</a>
-            <a href="contact.jsp" class="text-white text-decoration-none me-4 nav-link">Contact & Feedback</a>
+            <a href="feedback.jsp" class="text-white text-decoration-none me-4 nav-link">Feedback</a>
+            <a href="contact.jsp" class="text-white text-decoration-none me-4 nav-link">Contact</a>
             <a href="book.jsp" class="btn btn-gold text-white me-4">Book a Table</a>
             <a href="profile.jsp" class="text-white text-decoration-none">
               <i class="bi bi-person"></i>
@@ -52,7 +52,7 @@
           // Database connection details
           String jdbcURL = "jdbc:mysql://localhost:3306/royal_cuisine";
           String jdbcUsername = "root";
-          String jdbcPassword = "12345678";
+          String jdbcPassword = "1234";
           
           List<Offer> offers = new ArrayList<>();
           
@@ -89,7 +89,7 @@
             <div class="card-body">
               <h5 class="card-title"><%= offer.getTitle() %></h5>
               <p class="card-text"><%= offer.getDescription() %></p>
-              <a href="book.jsp" class="btn btn-warning">Book Now</a>
+              <a href="book.jsp" class="btn btn-warning">Make a Reservation</a>
             </div>
           </div>
         </div>
@@ -116,22 +116,7 @@
       <div class="row">
         <div class="col-md-4 mb-4 mb-md-0">
           <h3 class="fs-4 mb-4">Open Hours</h3>
-          <div class="row">
-            <div class="col-6">Monday</div>
-            <div class="col-6">9:00 - 24:00</div>
-            <div class="col-6">Tuesday</div>
-            <div class="col-6">9:00 - 24:00</div>
-            <div class="col-6">Wednesday</div>
-            <div class="col-6">9:00 - 24:00</div>
-            <div class="col-6">Thursday</div>
-            <div class="col-6">9:00 - 24:00</div>
-            <div class="col-6">Friday</div>
-            <div class="col-6">9:00 - 02:00</div>
-            <div class="col-6">Saturday</div>
-            <div class="col-6">9:00 - 02:00</div>
-            <div class="col-6">Sunday</div>
-            <div class="col-6">9:00 - 02:00</div>
-          </div>
+          <jsp:include page="/include/hours.jsp" />
         </div>
 
         <div class="col-md-4 mb-4 mb-md-0">

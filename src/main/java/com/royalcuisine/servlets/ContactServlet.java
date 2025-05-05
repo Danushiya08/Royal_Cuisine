@@ -29,7 +29,7 @@ public class ContactServlet extends HttpServlet {
             // Establish database connection (replace with your database credentials)
             String url = "jdbc:mysql://localhost:3306/royal_cuisine";
             String dbUser = "root";
-            String dbPassword = "12345678";
+            String dbPassword = "1234";
             conn = DriverManager.getConnection(url, dbUser, dbPassword);
 
             // MySQL query to insert form data into the 'contact_messages' table

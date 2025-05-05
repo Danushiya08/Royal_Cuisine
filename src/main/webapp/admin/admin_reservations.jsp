@@ -1,6 +1,7 @@
-<%@ page import="java.sql.Connection, java.sql.DriverManager, java.sql.PreparedStatement, java.sql.ResultSet" %>
+<%@ page import="java.sql.Connection, java.sql.DriverManager, java.sql.PreparedStatement, java.sql.ResultSet, java.sql.SQLException" %> <!-- Add SQLException import -->
 <%@ page import="java.io.IOException" %>
 <%@ page import="com.royalcuisine.servlets.ReservationManagementServlet" %>
+<%@ page import="com.royalcuisine.utils.DBConnection" %>
 
 <%
     try {
@@ -20,7 +21,7 @@
   <title>Manage Reservations - Royal Cuisine</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="../css/styles.css">
   <style>
     .sidebar {
       height: 100%;
@@ -64,22 +65,18 @@
     .topbar .user-icon {
       cursor: pointer;
     }
+    .form-control:focus {
+    background-color: transparent;
+    color: #212529;
+    box-shadow: none;
+    border-color: #8c7240;
+}
   </style>
 </head>
 <body class="bg-black text-white">
 
-  <!-- Sidebar -->
-  <div class="sidebar">
-    <h2 class="text-gold fw-bold">Admin Panel</h2>
-    <a href="admin_dashboard.jsp">Dashboard</a>
-    <a href="admin_menu.jsp">Manage Menu</a>
-    <a href="admin_users.jsp">Manage Users</a>
-    <a href="admin_reservations.jsp">Manage Reservations</a>
-    <a href="admin_offers.jsp">Manage Offers</a>
-    <a href="admin_feedbacks.jsp">Manage Feedbacks</a>
-    <a href="admin_packages.jsp">Manage Packages</a>
-    <a href="admin_blogs.jsp">Manage Blogs</a>
-  </div>
+<!-- Sidebar -->
+<jsp:include page="includes/sidebar.jsp" />
 
   <!-- Topbar with User Icon -->
   <div class="topbar">
@@ -88,14 +85,18 @@
     </div>
     <div class="topbar-right">
       <div class="dropdown">
-        <button class="btn text-white user-icon" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-          <i class="bi bi-person"></i>
-        </button>
+<a href="admin_message.jsp" class="btn text-white user-icon">
+  <i class="bi bi-chat"></i> 
+</a>
+
+<a href="admin_profile.jsp" class="btn text-white user-icon">
+  <i class="bi bi-person"></i> 
+</a>
         <ul class="dropdown-menu" aria-labelledby="userDropdown">
-         
+       
           <li><a class="dropdown-item" href="#">Email: <%= session.getAttribute("email") %></a></li>
           <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item" href="../login.jsp">Logout</a></li>
+                <li><a class="dropdown-item" href="../login.jsp">Logout</a></li>
         </ul>
       </div>
     </div>
@@ -106,38 +107,7 @@
     <h3>Manage Reservations</h3>
 
     <!-- Add New Reservation -->
-    <h4>Add New Reservation</h4>
-    <form action="ReservationManagementServlet" method="POST">
-      <div class="mb-3">
-        <label for="name" class="form-label">Customer Name</label>
-        <input type="text" class="form-control" id="name" name="name" required>
-      </div>
-      <div class="mb-3">
-        <label for="email" class="form-label">Email</label>
-        <input type="email" class="form-control" id="email" name="email" required>
-      </div>
-      <div class="mb-3">
-        <label for="phone" class="form-label">Phone</label>
-        <input type="tel" class="form-control" id="phone" name="phone" required>
-      </div>
-      <div class="mb-3">
-        <label for="reservationDate" class="form-label">Reservation Date</label>
-        <input type="date" class="form-control" id="reservationDate" name="reservationDate" required>
-      </div>
-      <div class="mb-3">
-        <label for="reservationTime" class="form-label">Reservation Time</label>
-        <input type="time" class="form-control" id="reservationTime" name="reservationTime" required>
-      </div>
-      <div class="mb-3">
-        <label for="guests" class="form-label">Guests</label>
-        <input type="number" class="form-control" id="guests" name="guests" required>
-      </div>
-      <div class="mb-3">
-        <label for="packageSelected" class="form-label">Package Selected</label>
-        <input type="text" class="form-control" id="packageSelected" name="packageSelected" required>
-      </div>
-      <button type="submit" class="btn btn-warning" name="action" value="addReservation">Add Reservation</button>
-    </form>
+   
 
     <!-- Success Message Popup -->
     <%
@@ -172,15 +142,17 @@
 
     <!-- Display Reservations from Database -->
     <h4 class="mt-5">Reservations List</h4>
-    <table class="table table-dark table-striped">
+    <table class="table table-dark table-striped" style="font-size: 12px">
       <thead>
         <tr>
-          <th>Customer Name</th>
           <th>Email</th>
           <th>Phone</th>
           <th>Reservation Date</th>
+          <th>Reservation Time</th>
           <th>Guests</th>
-          <th>Package Selected</th>
+          <th>Selected Table</th>
+          <th>Payment Status</th>
+          <th>Order Number</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -188,7 +160,7 @@
         <% 
             String jdbcURL = "jdbc:mysql://localhost:3306/royal_cuisine";
             String jdbcUsername = "root";
-            String jdbcPassword = "12345678";
+            String jdbcPassword = "1234";
 
             try (Connection connection = DriverManager.getConnection(jdbcURL, jdbcUsername, jdbcPassword)) {
                 String sql = "SELECT * FROM reservations";
@@ -197,105 +169,62 @@
                     while (resultSet.next()) {
         %>
         <tr>
-          <td><%= resultSet.getString("name") %></td>
           <td><%= resultSet.getString("email") %></td>
           <td><%= resultSet.getString("phone") %></td>
           <td><%= resultSet.getDate("reservation_date") %></td>
+          <td><%= resultSet.getTime("reservation_time") %></td>
           <td><%= resultSet.getInt("guests") %></td>
-          <td><%= resultSet.getString("package_selected") %></td>
+          <td><%= resultSet.getInt("table_id") %></td>
+          <td><%= resultSet.getString("payment_status") %></td>
+          <td><%= resultSet.getString("order_id") %></td>
           <td>
-            <!-- Edit Reservation Button -->
+            <!-- Edit and Delete Buttons -->
             <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editReservationModal<%= resultSet.getInt("id") %>">Edit</button>
-            <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteReservationModal<%= resultSet.getInt("id") %>">Delete</button>
-
-            <!-- Edit Reservation Modal -->
-            <div class="modal fade" id="editReservationModal<%= resultSet.getInt("id") %>" tabindex="-1" aria-labelledby="editReservationModalLabel" aria-hidden="true">
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="editReservationModalLabel">Edit Reservation</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body">
-                    <form action="ReservationManagementServlet" method="POST">
-                      <input type="hidden" name="id" value="<%= resultSet.getInt("id") %>" />
-                      <div class="mb-3">
-                        <label for="name" class="form-label">Customer Name</label>
-                        <input type="text" class="form-control" name="name" value="<%= resultSet.getString("name") %>" required>
-                      </div>
-                      <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" name="email" value="<%= resultSet.getString("email") %>" required>
-                      </div>
-                      <div class="mb-3">
-                        <label for="phone" class="form-label">Phone</label>
-                        <input type="tel" class="form-control" name="phone" value="<%= resultSet.getString("phone") %>" required>
-                      </div>
-                      <div class="mb-3">
-                        <label for="reservationDate" class="form-label">Reservation Date</label>
-                        <input type="date" class="form-control" name="reservationDate" value="<%= resultSet.getDate("reservation_date") %>" required>
-                      </div>
-                      <div class="mb-3">
-                        <label for="reservationTime" class="form-label">Reservation Time</label>
-                        <input type="time" class="form-control" name="reservationTime" value="<%= resultSet.getTime("reservation_time") %>" required>
-                      </div>
-                      <div class="mb-3">
-                        <label for="guests" class="form-label">Guests</label>
-                        <input type="number" class="form-control" name="guests" value="<%= resultSet.getInt("guests") %>" required>
-                      </div>
-                      <div class="mb-3">
-                        <label for="packageSelected" class="form-label">Package Selected</label>
-                        <input type="text" class="form-control" name="packageSelected" value="<%= resultSet.getString("package_selected") %>" required>
-                      </div>
-                      <button type="submit" class="btn btn-warning" name="action" value="editReservation">Update Reservation</button>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            </div>
-              <!-- Edit Reservation Modal -->
-  <div class="modal fade" id="editReservationModal<%= resultSet.getInt("id") %>" tabindex="-1" aria-labelledby="editReservationModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="editReservationModalLabel">Edit Reservation</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form action="ReservationManagementServlet" method="POST">
-            <input type="hidden" name="id" value="<%= resultSet.getInt("id") %>" />
-            <!-- Add the rest of the input fields as you already have -->
-            <button type="submit" class="btn btn-warning" name="action" value="editReservation">Update Reservation</button>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Delete Reservation Modal -->
-  <div class="modal fade" style="color:black;" id="deleteReservationModal<%= resultSet.getInt("id") %>" tabindex="-1" aria-labelledby="deleteReservationModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="deleteReservationModalLabel">Delete Reservation</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <p>Are you sure you want to delete this reservation?</p>
-        </div>
-        <div class="modal-footer">
-          <form action="ReservationManagementServlet" method="POST">
-            <input type="hidden" name="id" value="<%= resultSet.getInt("id") %>" />
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <button type="submit" class="btn btn-danger" name="action" value="deleteReservation">Delete</button>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
+            <button class="btn btn-danger btn-sm" onclick="confirmDelete(<%= resultSet.getInt("id") %>)">Delete</button>
           </td>
         </tr>
-        <% 
+        <!-- Edit Modal -->
+	<div class="modal fade" id="editReservationModal<%= resultSet.getInt("id") %>" tabindex="-1" aria-labelledby="editReservationLabel<%= resultSet.getInt("id") %>" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <form id="reservationEdit" action="TableReservationServlet" method="post">
+	        <div class="modal-header">
+	          <h5 class="modal-title text-dark" id="editReservationLabel<%= resultSet.getInt("id") %>">Edit Reservation</h5>
+	          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+	        </div>
+	        <div class="modal-body">
+	          <input type="hidden" name="id" value="<%= resultSet.getInt("id") %>">
+	
+	          <div class="mb-3">
+	            <label for="reservation_date" class="form-label">Reservation Date</label>
+	            <input type="date" id="date" class="form-control" name="reservation_date" value="<%= resultSet.getDate("reservation_date") %>" required>
+	          </div>
+	
+	          <div class="mb-3">
+	            <label for="reservation_time" class="form-label">Reservation Time</label>
+	            <input type="time" class="form-control" name="reservation_time" value="<%= resultSet.getTime("reservation_time") %>" required>
+	          </div>
+	
+	          <div class="mb-3">
+	            <label for="phone" class="form-label">Phone</label>
+	            <input type="text" class="form-control" name="phone" value="<%= resultSet.getString("phone") %>" required>
+	          </div>
+	
+	          <div class="mb-3">
+	            <label for="guests" class="form-label">Guests</label>
+	            <input type="number" class="form-control" name="guests" value="<%= resultSet.getInt("guests") %>" min="1" required>
+	          </div>
+	        </div>
+	        <div class="modal-footer">
+	          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+	          <button type="submit" class="btn btn-gold">Save Changes</button>
+	        </div>
+	      </form>
+	    </div>
+	  </div>
+	</div>
+        
+        <%  
                     }
                 }
             } catch (Exception e) {
@@ -304,9 +233,73 @@
             }
         %>
       </tbody>
-    </table>
+    </table>   
   </div>
+  
+  <%@ page import="java.sql.*" %>
+	<%
+	String deleteId = request.getParameter("deleteId");
+	if (deleteId != null) {
+	    try (Connection conn = DBConnection.getConnection();
+	         PreparedStatement stmt = conn.prepareStatement("DELETE FROM reservations WHERE id = ?")) {
+	
+	        stmt.setInt(1, Integer.parseInt(deleteId));
+	        stmt.executeUpdate();
+	        out.println("<script>Swal.fire('Deleted!', 'Reservation has been deleted.', 'success')</script>");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        out.println("<script>Swal.fire('Error!', 'Unable to delete reservation.', 'error')</script>");
+	    }
+	}
+	%>
+  
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script>
+	  function confirmDelete(reservationId) {
+	    Swal.fire({
+	      title: 'Are you sure?',
+	      text: "This reservation will be deleted.",
+	      icon: 'warning',
+	      showCancelButton: true,
+	      confirmButtonColor: '#d33',
+	      cancelButtonColor: '#3085d6',
+	      confirmButtonText: 'Yes, delete it!'
+	    }).then((result) => {
+	      if (result.isConfirmed) {
+	        window.location.href = 'admin_reservations.jsp?deleteId=' + reservationId;
+	      }
+	    });
+	  }
+	</script>
+	
+	    <%
+	    String errorMessage = request.getParameter("error");
+	    String successMessage = request.getParameter("success");
+	%>
+	<script>
+	    <% if (errorMessage != null) { %>
+	        Swal.fire({
+	            icon: 'error',
+	            title: 'Oops...',
+	            text: '<%= errorMessage %>'
+	        });
+	    <% } else if (successMessage != null) { %>
+		    Swal.fire({
+	            icon: 'success',
+	            title: 'Updated',
+	            text: '<%= successMessage %>',
+	            confirmButtonText: 'Login'
+	        }).then((result) => {
+	            if (result.isConfirmed) {
+	                window.location.href = "admin_reservations.jsp"; 
+	            }
+	        });
+	    <% } %>
+	</script>
+
+
+  
 </body>
 </html>

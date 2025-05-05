@@ -195,4 +195,53 @@
     <servlet-name>ResetPasswordServlet</servlet-name>
     <url-pattern>/ResetPasswordServlet</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>TableReservationServlet</display-name>
+    <servlet-name>TableReservationServlet</servlet-name>
+    <servlet-class>com.royalcuisine.servlets.TableReservationServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>TableReservationServlet</servlet-name>
+    <url-pattern>/admin/TableReservationServlet</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>TableManagementServlet</display-name>
+    <servlet-name>TableManagementServlet</servlet-name>
+    <servlet-class>com.royalcuisine.servlets.TableManagementServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>TableManagementServlet</servlet-name>
+    <url-pattern>/admin/TableManagementServlet</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>FeedbackServlet</display-name>
+    <servlet-name>FeedbackServlet</servlet-name>
+    <servlet-class>com.royalcuisine.servlets.FeedbackServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>FeedbackServlet</servlet-name>
+    <url-pattern>/FeedbackServlet</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>SendMessageServlet</display-name>
+    <servlet-name>SendMessageServlet</servlet-name>
+    <servlet-class>com.royalcuisine.servlets.SendMessageServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>SendMessageServlet</servlet-name>
+    <url-pattern>/admin/SendMessageServlet</url-pattern>
+  </servlet-mapping>
+  <servlet>
+        <servlet-name>OpeningHoursServlet</servlet-name>
+        <servlet-class>com.example.OpeningHoursServlet</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+        <servlet-name>OpeningHoursServlet</servlet-name>
+        <url-pattern>/admin/opening-hours-servlet</url-pattern>
+    </servlet-mapping>
 </web-app>

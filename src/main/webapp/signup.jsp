@@ -14,7 +14,7 @@
     <div class="min-vh-100 d-flex align-items-center justify-content-center background-overlay" >
         <div class="container">
             <div class="row justify-content-center">
-                <div class="col-md-6 col-lg-5">
+                <div class="col-md-6 col-lg-5 px-5 py-4" style="background-color: #000000b3; border-radius: 20px">
                     <h1 class="text-white text-center mb-4 fw-bold">Sign Up</h1>
                     
                     <form id="signupForm" action="SignupServlet" method="post">
@@ -50,7 +50,7 @@
                         <div class="mb-3">
                             <div class="form-floating">
                                 <input 
-                                    type="email" 
+                                    type="text" 
                                     class="form-control custom-input" 
                                     id="emailAddress" 
                                     name="emailAddress"
@@ -58,6 +58,7 @@
                                     required
                                 >
                                 <label for="emailAddress">Email Address</label>
+                                <div id="emailError" class="invalid-feedback"></div>
                             </div>
                         </div>
                         
@@ -72,14 +73,8 @@
                                     required
                                 >
                                 <label for="password">Password</label>
+                                <div id="passwordError" class="invalid-feedback"></div>
                             </div>
-                            <button 
-                                type="button"
-                                class="btn position-absolute end-0 top-50 translate-middle-y bg-transparent border-0 text-dark me-2 toggle-password"
-                                data-target="password"
-                            >
-                                <i class="eye-icon"></i>
-                            </button>
                         </div>
                         
                         <div class="mb-3 position-relative">
@@ -93,14 +88,8 @@
                                     required
                                 >
                                 <label for="confirmPassword">Confirm Password</label>
+                                <div id="confirmPasswordError" class="invalid-feedback"></div>
                             </div>
-                            <button 
-                                type="button"
-                                class="btn position-absolute end-0 top-50 translate-middle-y bg-transparent border-0 text-dark me-2 toggle-password"
-                                data-target="confirmPassword"
-                            >
-                                <i class="eye-icon"></i>
-                            </button>
                         </div>
                         
                         <div class="mb-3">
@@ -116,6 +105,7 @@
                                         required
                                     >
                                     <label for="contactNumber">Contact Number</label>
+                                    <div id="contactNumberError" class="invalid-feedback"></div>
                                 </div>
                             </div>
                         </div>
@@ -140,7 +130,84 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Custom JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <%
+	    String errorMessage = request.getParameter("error");
+	    String successMessage = request.getParameter("success");
+	    Boolean signupSuccess  = (Boolean) request.getAttribute("signupSuccess");
+	%>
+	<script>
+	    <% if (errorMessage != null) { %>
+	        Swal.fire({
+	            icon: 'error',
+	            title: 'Oops...',
+	            text: '<%= errorMessage %>'
+	        });
+	    <% } else if (signupSuccess  != null && signupSuccess ) { %>
+		    Swal.fire({
+	            icon: 'success',
+	            title: 'Account created successfully.',
+	            text: 'Welcome to Royal Cuisine! Click Login Button to Login to Royal Cuisine Platform',
+	            confirmButtonText: 'Login'
+	        }).then((result) => {
+	            if (result.isConfirmed) {
+	                window.location.href = "login.jsp"; 
+	            }
+	        });
+	    <% } %>
+	</script>
+
+	<script>
+		document.getElementById("signupForm").addEventListener("submit", function(event) {
+		    let valid = true;
+		
+		    const email = document.getElementById("emailAddress");
+		    const password = document.getElementById("password");
+		    const confirmPassword = document.getElementById("confirmPassword");
+		    const contactNumber = document.getElementById("contactNumber");
+		
+		    email.classList.remove("is-invalid");
+		    password.classList.remove("is-invalid");
+		    confirmPassword.classList.remove("is-invalid");
+		    contactNumberError.classList.remove("is-invalid");
+		    document.getElementById("emailError").textContent = "";
+		    document.getElementById("passwordError").textContent = "";
+		    document.getElementById("confirmPasswordError").textContent = "";
+		    document.getElementById("contactNumberError").textContent = "";
+		
+		    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		    if (!emailRegex.test(email.value.trim())) {
+		        email.classList.add("is-invalid");
+		        document.getElementById("emailError").textContent = "Please enter a valid email address.";
+		        valid = false;
+		    }
+		
+		    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+		    if (!passwordRegex.test(password.value)) {
+		        password.classList.add("is-invalid");
+		        document.getElementById("passwordError").textContent = 
+		            "Password must be at least 8 characters and include upper, lower case and a number.";
+		        valid = false;
+		    }
+		
+		    if (password.value !== confirmPassword.value) {
+		        confirmPassword.classList.add("is-invalid");
+		        document.getElementById("confirmPasswordError").textContent = "Passwords do not match.";
+		        valid = false;
+		    }
+		    
+		    const phonePattern = /^[1-9]\d{8}$/;
+		    if (!phonePattern.test(contactNumber.value.trim())) {
+		        contactNumber.classList.add('is-invalid');
+		        document.getElementById("contactNumberError").textContent = "Enter 9-digit phone number (without leading 0). Example: 712345678";
+		        valid = false;
+		    }
+		
+		    if (!valid) {
+		        event.preventDefault();
+		    }
+		});
+	</script>
  
 </body>
 </html>

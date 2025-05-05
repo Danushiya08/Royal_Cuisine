@@ -11,6 +11,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.mindrot.jbcrypt.BCrypt;
+
 
 public class SignupServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -20,6 +22,7 @@ public class SignupServlet extends HttpServlet {
         String lastName = request.getParameter("lastName");
         String email = request.getParameter("emailAddress");
         String password = request.getParameter("password");
+        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
         String contactNumber = request.getParameter("contactNumber");
         String role = request.getParameter("role");
 
@@ -41,15 +44,16 @@ public class SignupServlet extends HttpServlet {
             stmt.setString(1, firstName);
             stmt.setString(2, lastName);
             stmt.setString(3, email);
-            stmt.setString(4, password);
+            stmt.setString(4, hashedPassword);
             stmt.setString(5, contactNumber);
             stmt.setString(6, role);
 
             int rowsInserted = stmt.executeUpdate();
             if (rowsInserted > 0) {
                 System.out.println("User registered successfully!");
-                sendWelcomeEmail(email, firstName);
-                response.sendRedirect("login.jsp"); // Redirect to your login page
+                request.setAttribute("signupSuccess", true);
+                request.getRequestDispatcher("signup.jsp").forward(request, response);
+                sendWelcomeEmail(email, firstName);               
             } else {
                 System.out.println("User registration failed! No rows affected.");
                 response.sendRedirect("signup.jsp?error=Signup failed."); // Redirect back to signup with error
@@ -60,6 +64,9 @@ public class SignupServlet extends HttpServlet {
             // Check for specific SQL errors like duplicate email
             if (e.getMessage().contains("Duplicate entry") && e.getMessage().contains("email")) {
                 response.sendRedirect("signup.jsp?error=Email address already registered.");
+            }
+            else if (e.getMessage().contains("Duplicate entry") && e.getMessage().contains("contact_number"))   {
+            	response.sendRedirect("signup.jsp?error=Contact Number already registered.");
             } else {
                 response.sendRedirect("signup.jsp?error=Database error during signup.");
             }

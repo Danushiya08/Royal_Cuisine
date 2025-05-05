@@ -22,7 +22,7 @@
                         <div class="mb-3">
                             <div class="form-floating">
                                 <input 
-                                    type="email" 
+                                    type="text" 
                                     class="form-control custom-input" 
                                     id="emailAddress" 
                                     name="emailAddress"
@@ -109,6 +109,21 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <%
+	    String errorMessage = request.getParameter("error");
+	%>
+		<script>
+	    <% if (errorMessage != null) { %>
+	        Swal.fire({
+	            icon: 'error',
+	            title: 'Oops...',
+	            text: '<%= errorMessage %>'
+	        });
+	    <% } %>
+	</script>
+	
 
     <!-- Custom JS -->
     <script>

@@ -74,6 +74,7 @@
     <a href="Manager_dashboard.jsp">Dashboard</a>
     <a href="Manager_menu.jsp">Manage Menu</a>
     <a href="Manager_users.jsp">Manage Users</a>
+      <a href="Manager_tables.jsp">Manage Tables</a>
     <a href="Manager_reservations.jsp">Manage Reservations</a>
     <a href="Manager_feedbacks.jsp">Manage Feedbacks</a>
   </div>
@@ -163,7 +164,7 @@
         <% 
         String jdbcURL = "jdbc:mysql://localhost:3306/royal_cuisine";
         String jdbcUsername = "root";
-        String jdbcPassword = "12345678";
+        String jdbcPassword = "1234";
         
         try {
             Connection connection = DriverManager.getConnection(jdbcURL, jdbcUsername, jdbcPassword);

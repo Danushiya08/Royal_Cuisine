@@ -1,5 +1,6 @@
 package com.royalcuisine.servlets;
 
+import org.mindrot.jbcrypt.BCrypt;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -32,11 +33,14 @@ public class ResetPasswordServlet extends HttpServlet {
             // Load MySQL JDBC Driver
             Class.forName("com.mysql.cj.jdbc.Driver");
 
+            // Hash the password using BCrypt
+            String hashedPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt());
+
             // Database connection
             connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/royal_cuisine", "root", "12345678");
             String query = "UPDATE users SET password = ? WHERE email = ?";
             preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, newPassword); // Hash the password in production
+            preparedStatement.setString(1, hashedPassword); // Store the hashed password
             preparedStatement.setString(2, email);
 
             int rowsAffected = preparedStatement.executeUpdate();

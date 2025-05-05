@@ -2,14 +2,15 @@
 <%@ page import="java.util.List, java.util.ArrayList" %>
 <%@ page import="com.royalcuisine.servlets.MenuServlet.Meal" %>
 <%@ page import="com.royalcuisine.servlets.MenuServlet.Beverage" %>
+<%@ page import="java.util.*" %>
 <%
     String dbURL = "jdbc:mysql://localhost:3306/royal_cuisine";
     String dbUser = "root";
-    String dbPassword = "12345678";
+    String dbPassword = "1234";
 
     HttpSession sessionUser = request.getSession(false);
     if (sessionUser == null || sessionUser.getAttribute("email") == null) {
-        response.sendRedirect("/admin/login.jsp");
+        response.sendRedirect("../login.jsp");
         return;
     }
 
@@ -79,6 +80,7 @@
 
   <!-- Google Charts Loader -->
   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
     body {
@@ -203,37 +205,33 @@
 
 <body>
 
-  <!-- Sidebar -->
-  <div class="sidebar">
-    <h2 class="text-gold fw-bold">Admin Panel</h2>
-    <a href="admin_dashboard.jsp">Dashboard</a>
-    <a href="admin_menu.jsp">Manage Menu</a>
-    <a href="admin_users.jsp">Manage Users</a>
-    <a href="admin_reservations.jsp">Manage Reservations</a>
-    <a href="admin_offers.jsp">Manage Offers</a>
-    <a href="admin_feedbacks.jsp">Manage Feedbacks</a>
-    <a href="admin_packages.jsp">Manage Packages</a>
-    <a href="admin_blogs.jsp">Manage Blogs</a>
-  </div>
+<jsp:include page="includes/sidebar.jsp" />
 
-  <!-- Topbar -->
+
+  <!-- Topbar with User Icon -->
   <div class="topbar">
     <div class="topbar-left">
       <h4>Royal Cuisine Admin</h4>
     </div>
     <div class="topbar-right">
       <div class="dropdown">
-        <button class="btn text-white user-icon" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-          <i class="bi bi-person"></i>
-        </button>
+<a href="admin_message.jsp" class="btn text-white user-icon">
+  <i class="bi bi-chat"></i> 
+</a>
+
+<a href="admin_profile.jsp" class="btn text-white user-icon">
+  <i class="bi bi-person"></i> 
+</a>
         <ul class="dropdown-menu" aria-labelledby="userDropdown">
+       
           <li><a class="dropdown-item" href="#">Email: <%= session.getAttribute("email") %></a></li>
           <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item" href="../login.jsp">Logout</a></li>
+                <li><a class="dropdown-item" href="../login.jsp">Logout</a></li>
         </ul>
       </div>
     </div>
   </div>
+
 
   <!-- Content Section -->
   <div class="content">
@@ -279,8 +277,125 @@
         </div>
       </div>
     </div>
+    
+    
+<%@ page import="java.sql.*" %>
+<%@ page import="java.util.*" %>
+<%@ page import="com.royalcuisine.utils.DBConnection" %>
 
-    <div class="card bg-dark text-white mb-4">
+<div class="d-flex">
+	<div>
+		<h5>Top 5 Meals Today</h5>
+		<canvas id="mealChart" style="width: 600px; height: 300px"></canvas>
+	</div>
+	<div>
+		<h5>Top 5 Beverages Today</h5>
+		<canvas id="beverageChart" style="width: 600px; height: 300px"></canvas>
+	</div>
+
+</div>
+
+<%
+    List<String> topMealNames = new ArrayList<>();
+    List<Integer> topMealQuantities = new ArrayList<>();
+    List<String> topBeverageNames = new ArrayList<>();
+    List<Integer> topBeverageQuantities = new ArrayList<>();
+
+    try (Connection conns = DBConnection.getConnection()) {
+
+        // Top Meals Query
+        String topMealsSql = "SELECT rm.meal_name, SUM(rm.quantity) AS total_quantity " +
+                             "FROM reservation_meals rm " +
+                             "JOIN reservations r ON rm.reservation_id = r.id " +
+                             "WHERE DATE(r.created_at) = CURDATE() " +
+                             "GROUP BY rm.meal_name " +
+                             "ORDER BY total_quantity DESC " +
+                             "LIMIT 5";
+
+        try (PreparedStatement mealStmt = conns.prepareStatement(topMealsSql);
+             ResultSet mealRs = mealStmt.executeQuery()) {
+            while (mealRs.next()) {
+                topMealNames.add(mealRs.getString("meal_name"));
+                topMealQuantities.add(mealRs.getInt("total_quantity"));
+            }
+        }
+
+        // Top Beverages Query
+        String beverageSql = "SELECT rb.beverage_name AS name, SUM(rb.quantity) AS quantity " +
+                             "FROM reservation_beverages rb " +
+                             "JOIN reservations r ON rb.reservation_id = r.id " +
+                             "WHERE DATE(r.created_at) = CURDATE() " +
+                             "GROUP BY rb.beverage_name " +
+                             "ORDER BY quantity DESC " +
+                             "LIMIT 5";
+
+        try (PreparedStatement bevStmt = conns.prepareStatement(beverageSql);
+             ResultSet bevRs = bevStmt.executeQuery()) {
+            while (bevRs.next()) {
+                topBeverageNames.add(bevRs.getString("name"));
+                topBeverageQuantities.add(bevRs.getInt("quantity"));
+            }
+        }
+
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+    }
+
+    String topMealNamesJs = topMealNames.toString().replace("[", "['").replace("]", "']").replace(", ", "', '");
+    String topMealQuantitiesJs = topMealQuantities.toString();
+
+    String topBeverageNamesJs = topBeverageNames.toString().replace("[", "['").replace("]", "']").replace(", ", "', '");
+    String topBeverageQuantitiesJs = topBeverageQuantities.toString();
+%>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const mealCtx = document.getElementById('mealChart').getContext('2d');
+    new Chart(mealCtx, {
+        type: 'bar',
+        data: {
+            labels: <%= topMealNamesJs %>,
+            datasets: [{
+                label: 'Top 5 Meals Today',
+                data: <%= topMealQuantitiesJs %>,
+                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    const beverageCtx = document.getElementById('beverageChart').getContext('2d');
+    new Chart(beverageCtx, {
+        type: 'bar',
+        data: {
+            labels: <%= topBeverageNamesJs %>,
+            datasets: [{
+                label: 'Top 5 Beverages Today',
+                data: <%= topBeverageQuantitiesJs %>,
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+
+    <div class="card bg-dark text-white mb-4 mt-4">
       <div class="card-body">
         <h5 class="card-title">Analytics Overview</h5>
         <div id="chart_pie" style="width: 100%; height: 400px;"></div>

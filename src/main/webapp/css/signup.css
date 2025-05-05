@@ -4,10 +4,11 @@ body {
   }
   
   .background-overlay {
-    background-image: url("../assets/food31.png");
+    background-image:linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("../assets/sing-up-bg.jpg");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    background-position: fixed;
   }
   
   .custom-input {
@@ -95,6 +96,13 @@ body {
   /* Focus states */
   .form-control:focus {
     box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.25) !important;
+  }
+  
+     div:where(.swal2-container) h2:where(.swal2-title) {
+  	font-size: 20px !important;
+  }
+  div:where(.swal2-container) div:where(.swal2-html-container) {
+      font-size: 14px !important;
   }
   
   
